@@ -201,6 +201,20 @@ in
           Additional command line arguments to pass to Asterisk.
         '';
       };
+
+      restartOnConfigChange = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = ''
+          Whether the Asterisk service should be automatically restarted
+          when its configuration changes.
+
+          Set this to `true` if configuration changes should take effect
+          immediately via a restart. Otherwise, manual intervention is required
+          to avoid interrupting ongoing calls.
+        '';
+      };
+
       package = lib.mkPackageOption pkgs "asterisk" { };
     };
   };
@@ -232,8 +246,7 @@ in
 
       wantedBy = [ "multi-user.target" ];
 
-      # Do not restart, to avoid disruption of running calls. Restart unit by yourself!
-      restartIfChanged = false;
+      restartIfChanged = cfg.restartOnConfigChange;
 
       preStart = ''
         # Copy skeleton directory tree to /var
