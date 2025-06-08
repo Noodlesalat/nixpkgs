@@ -247,6 +247,9 @@ in
       wantedBy = [ "multi-user.target" ];
 
       restartIfChanged = cfg.restartOnConfigChange;
+      restartTriggers = lib.mkIf cfg.restartOnConfigChange (
+        map (name: "/etc/asterisk/${name}") (builtins.attrNames allConfFiles)
+      );
 
       preStart = ''
         # Copy skeleton directory tree to /var
