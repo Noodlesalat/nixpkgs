@@ -16,7 +16,12 @@ let
 
   # Add filecontents from files of useTheseDefaultConfFiles to confFiles, do not override
   defaultConfFiles = lib.subtractLists (lib.attrNames cfg.confFiles) cfg.useTheseDefaultConfFiles;
-  allConfFiles =
+  allConfFiles = lib.mapAttrs (name: conf:
+    pkgs.writeTextFile {
+      name = name;
+      text = conf.text;
+    }
+  ) (
     {
       # Default asterisk.conf file
       "asterisk.conf".text = ''
@@ -54,7 +59,8 @@ let
     // lib.mapAttrs (name: text: { inherit text; }) cfg.confFiles
     // lib.listToAttrs (
       map (x: lib.nameValuePair x { source = cfg.package + "/etc/asterisk/" + x; }) defaultConfFiles
-    );
+    )
+  );
 
 in
 
@@ -223,7 +229,7 @@ in
     environment.systemPackages = [ cfg.package ];
 
     environment.etc = lib.mapAttrs' (
-      name: value: lib.nameValuePair "asterisk/${name}" value
+      name: storePath: lib.nameValuePair "asterisk/${name}" { source = storePath; }
     ) allConfFiles;
 
     users.users.asterisk = {
@@ -248,8 +254,7 @@ in
 
       restartIfChanged = cfg.restartOnConfigChange;
       restartTriggers = lib.mkIf cfg.restartOnConfigChange (
-        map (name: allConfFiles.${name}.source or (builtins.toFile name allConfFiles.${name}.text))
-            (builtins.attrNames allConfFiles)
+        builtins.attrValues allConfFiles
       );
 
       preStart = ''
