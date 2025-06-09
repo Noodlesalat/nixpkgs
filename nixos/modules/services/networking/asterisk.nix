@@ -248,7 +248,7 @@ in
 
       restartIfChanged = cfg.restartOnConfigChange;
       restartTriggers = lib.mkIf cfg.restartOnConfigChange (
-        map (name: "/etc/asterisk/${name}") (builtins.attrNames allConfFiles)
+        builtins.attrValues (lib.filterAttrs (_name: val: val ? source) allConfFiles)
       );
 
       preStart = ''
