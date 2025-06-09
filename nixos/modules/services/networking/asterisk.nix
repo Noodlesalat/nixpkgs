@@ -248,7 +248,8 @@ in
 
       restartIfChanged = cfg.restartOnConfigChange;
       restartTriggers = lib.mkIf cfg.restartOnConfigChange (
-        builtins.attrValues (lib.filterAttrs (_name: val: val ? source) allConfFiles)
+        map (name: allConfFiles.${name}.source or (builtins.toFile name allConfFiles.${name}.text))
+            (builtins.attrNames allConfFiles)
       );
 
       preStart = ''
