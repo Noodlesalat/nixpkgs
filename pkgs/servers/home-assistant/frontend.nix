@@ -1,6 +1,6 @@
 {
   lib,
-  fetchPypi,
+  fetchFromGitHub,
   buildPythonPackage,
 }:
 
@@ -11,12 +11,14 @@ buildPythonPackage rec {
   version = "20250516.0";
   format = "wheel";
 
-  src = fetchPypi {
-    inherit version format;
-    pname = "home_assistant_frontend";
-    dist = "py3";
-    python = "py3";
-    hash = "sha256-KyZE9SmEoAKgaZMRvs83BK73Yo3fqD8O+vMBO4JE+Ng=";
+  src = fetchFromGitHub {
+    owner = "Noodlesalat";
+    repo = "frontend";
+    rev = "ha-state-control-light-brightness-live";
+    # Nutze besser einen festen Commit für reproduzierbare Builds
+    # z.B.: rev = "0123456789abcdef..."; und branch separat angeben
+    # Optional: fetchSubmodules = true; falls das Repo Submodule verwendet
+    hash = "sha256-0000000000000000000000000000000000000000000="; # ← durch tatsächlichen Hash ersetzen (s. Hinweis unten)
   };
 
   # there is nothing to strip in this package
