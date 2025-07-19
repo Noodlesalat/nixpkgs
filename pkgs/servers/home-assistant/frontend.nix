@@ -18,7 +18,7 @@ buildPythonPackage rec {
     # Nutze besser einen festen Commit für reproduzierbare Builds
     # z.B.: rev = "0123456789abcdef..."; und branch separat angeben
     # Optional: fetchSubmodules = true; falls das Repo Submodule verwendet
-    hash = "sha256-0000000000000000000000000000000000000000000="; # ← durch tatsächlichen Hash ersetzen (s. Hinweis unten)
+    hash = "sha256-PJ8tQu0oaUY5J10bT2qdrWxe0ShjnE1ycrpng4vlY0A="; # ← durch tatsächlichen Hash ersetzen (s. Hinweis unten)
   };
 
   # there is nothing to strip in this package
