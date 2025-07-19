@@ -1,36 +1,56 @@
-{
-  lib,
-  fetchFromGitHub,
-  buildPythonPackage,
+{ lib
+, stdenv
+, fetchFromGitHub
+, nodejs
+, python3
+, bash
+, git
+, cacert
+, yarn
 }:
 
-buildPythonPackage rec {
-  # the frontend version corresponding to a specific home-assistant version can be found here
-  # https://github.com/home-assistant/home-assistant/blob/master/homeassistant/components/frontend/manifest.json
-  pname = "home-assistant-frontend";
-  version = "20250516.0";
+stdenv.mkDerivation rec {
+  pname = "home-assistant-frontend-custom";
+  version = "20250719";
 
   src = fetchFromGitHub {
     owner = "Noodlesalat";
     repo = "frontend";
     rev = "ha-state-control-light-brightness-live";
-    # Nutze besser einen festen Commit für reproduzierbare Builds
-    # z.B.: rev = "0123456789abcdef..."; und branch separat angeben
-    # Optional: fetchSubmodules = true; falls das Repo Submodule verwendet
-    hash = "sha256-PJ8tQu0oaUY5J10bT2qdrWxe0ShjnE1ycrpng4vlY0A="; # ← durch tatsächlichen Hash ersetzen (s. Hinweis unten)
+    # Optional, aber empfohlen: festen Commit einsetzen
+    # rev = "abcdef1234567890...";
+    # ref = "ha-state-control-light-brightness-live";
+    hash = "sha256-PJ8tQu0oaUY5J10bT2qdrWxe0ShjnE1ycrpng4vlY0A=";
   };
 
-  # there is nothing to strip in this package
-  dontStrip = true;
+  nativeBuildInputs = [
+    nodejs
+    yarn
+    python3
+    bash
+    git
+    cacert
+  ];
 
-  # no Python tests implemented
-  doCheck = false;
+  buildPhase = ''
+    echo "Running script/setup"
+    bash script/setup
+
+    echo "Running script/build_frontend"
+    bash script/build_frontend
+  '';
+
+  installPhase = ''
+    mkdir -p $out
+    cp -r ./hass_frontend $out/
+    echo "Build installed to $out"
+  '';
 
   meta = with lib; {
-    changelog = "https://github.com/home-assistant/frontend/releases/tag/${version}";
-    description = "Frontend for Home Assistant";
-    homepage = "https://github.com/home-assistant/frontend";
+    description = "Home Assistant Frontend (custom development build)";
+    homepage = "https://github.com/Noodlesalat/frontend";
     license = licenses.asl20;
-    teams = [ teams.home-assistant ];
+    maintainers = [ ];
+    platforms = platforms.all;
   };
 }
