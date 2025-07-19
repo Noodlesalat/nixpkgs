@@ -9,7 +9,6 @@ buildPythonPackage rec {
   # https://github.com/home-assistant/home-assistant/blob/master/homeassistant/components/frontend/manifest.json
   pname = "home-assistant-frontend";
   version = "20250516.0";
-  format = "wheel";
 
   src = fetchFromGitHub {
     owner = "Noodlesalat";
