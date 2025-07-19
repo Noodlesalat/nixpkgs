@@ -42,6 +42,7 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir -p $out
+    ls -R *
     cp -r ./hass_frontend $out/
     echo "Build installed to $out"
   '';
